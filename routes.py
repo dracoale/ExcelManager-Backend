@@ -104,7 +104,7 @@ async def convertir(columnas_hoja: str = Form(...), file: UploadFile = File(...)
 
     # Devolver el archivo Excel como respuesta
     return FileResponse(excel_file_path, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', headers={
-        "Content-Disposition": f"attachment; filename={file.filename.split('.')[0]}_output.xlsx"
+        "Content-Disposition": 'attachment; filename="archivo_convertido.xlsx"'
     })
 
 @router.get("/upload")
