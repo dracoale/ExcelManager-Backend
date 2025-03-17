@@ -53,7 +53,7 @@ async def convertir(opcion: int = 1, file: UploadFile = File(...)):
     with open(temp_file_path, "wb") as f:
         f.write(contents)
 
-    if opcion == 1:
+    if 1 == 1:
         # Convertir de CSV a Excel
         df = pd.read_csv(temp_file_path)
         output = io.BytesIO()  # Crear un buffer en memoria
@@ -63,15 +63,15 @@ async def convertir(opcion: int = 1, file: UploadFile = File(...)):
         # Crear un archivo de Excel temporal para enviar como respuesta
         return StreamingResponse(output, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', headers={"Content-Disposition": f"attachment; filename={file.filename.split('.')[0]}.xlsx"})
 
-    else:
+    #else:
         # Convertir de Excel a CSV
-        df = pd.read_excel(temp_file_path, sheet_name='Sheet1', engine='openpyxl')
-        output = io.BytesIO()  # Crear un buffer en memoria
-        df.to_csv(output, index=False)
-        output.seek(0)  # Volver al principio del archivo
+       # df = pd.read_excel(temp_file_path, sheet_name='Sheet1', engine='openpyxl')
+       # output = io.BytesIO()  # Crear un buffer en memoria
+       # df.to_csv(output, index=False)
+       # output.seek(0)  # Volver al principio del archivo
 
         # Crear un archivo CSV temporal para enviar como respuesta
-        return StreamingResponse(output, media_type='text/csv', headers={"Content-Disposition": f"attachment; filename={file.filename.split('.')[0]}.csv"})
+        #return StreamingResponse(output, media_type='text/csv', headers={"Content-Disposition": f"attachment; filename={file.filename.split('.')[0]}.csv"})
 @router.post("/dividir")
 async def convertir(columnas_hoja: str = Form(...), file: UploadFile = File(...)):
     # Leer el archivo subido
