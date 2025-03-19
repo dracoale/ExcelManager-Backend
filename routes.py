@@ -107,6 +107,48 @@ async def convertir(columnas_hoja: str = Form(...), file: UploadFile = File(...)
         "Content-Disposition": 'attachment; filename="archivo_convertido.xlsx"'
     })
 
-@router.get("/upload")
-def aupload_file():
-    return os.getcwd()
+
+@router.post("/unir-excel")
+async def unir_excel(
+    file1: UploadFile = File(...),
+    file2: UploadFile = File(...),
+    columnas: str = Form(...),  
+    eliminar_duplicados: str = Form("No")
+):
+    df1 = pd.read_excel(io.BytesIO(await file1.read()))
+    df2 = pd.read_excel(io.BytesIO(await file2.read()))
+
+    # Convertir JSON a diccionario
+    columnas_dict = json.loads(columnas)
+
+    # Crear DataFrame vacío para almacenar los datos unidos
+    df_unido = pd.DataFrame()
+
+    for nueva_columna, columnas_a_unir in columnas_dict.items():
+        if len(columnas_a_unir) != 2:
+            return {"error": f"La clave '{nueva_columna}' debe contener exactamente 2 columnas."}
+
+        columna_archivo1, columna_archivo2 = columnas_a_unir
+
+        # Extraer las columnas específicas
+        datos_columna1 = df1[columna_archivo1].dropna().astype(str)
+        datos_columna2 = df2[columna_archivo2].dropna().astype(str)
+
+        # Unirlas en una sola columna
+        df_unido[nueva_columna] = pd.concat([datos_columna1, datos_columna2], ignore_index=True)
+
+    # Eliminar duplicados si es necesario
+    if eliminar_duplicados.lower() == "sí":
+        df_unido = df_unido.drop_duplicates()
+
+    # Guardar el archivo en memoria
+    output_bytes = io.BytesIO()
+    df_unido.to_excel(output_bytes, index=False, engine='openpyxl')
+    output_bytes.seek(0)  # Volver al inicio del archivo en memoria
+
+    # Retornar el archivo corregido
+    return StreamingResponse(
+        output_bytes,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": "attachment; filename=archivo_unido.xlsx"}
+    )
