@@ -1,9 +1,9 @@
 from fastapi import FastAPI
-import routes
+from routes import router
 from pydantic import BaseModel
 app=FastAPI()
 
-app.include_router(routes.router)
+app.include_router(router)
 @app.get("/")
 def index():
     return {"botrra rra"}

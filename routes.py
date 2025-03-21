@@ -15,7 +15,7 @@ def main():
     return "hoola"
 
 @router.post("/uploadcsv")
-async def aupload_file(file: UploadFile = File(...)):
+async def aupload_files(file: UploadFile = File(...)):
     with open(os.getcwd()+"/"+file.filename,"wb")as myfile:
         content = await file.read()
         content_str = content.decode("utf-8", errors="ignore")  # Convertir de bytes a string
